@@ -150,7 +150,7 @@ class DataModel extends Server {
 		}
 		try{
 			$proc = $args['procedure'];
-			echo("/*" . $proc . "*/");
+			// echo("/*" . $proc . "*/");
 			$stmt = $this->conn->query("CALL {$proc}");
 			$return = $stmt->fetchAll();
 		}
