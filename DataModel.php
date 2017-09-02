@@ -7,10 +7,15 @@ class DataModel extends Server {
 	private $conn = '';
 	private $table = '';
 	private $pk_col = '';
+	private $ini_file = '';
 	public $allowedOperations = array();
 	public $status = false;
 	public $errorMessage = '';
-	function __construct($params = NULL) {
+	function __destruct() {
+		$this->conn = NULL;
+		unset($this->conn);
+	}
+	public function init($params = NULL){
 		try {
 			$this->allowedOperations = array('fetch');
 			if(isset($params['allowedOperations'])){
@@ -29,10 +34,11 @@ class DataModel extends Server {
 			$baseTable = $params['baseTable'];
 			$this->table = "`".str_replace("`","``",$baseTable)."`";
 			$this->pk_col = $params['pk_col'];
+			$this->ini_file = (isset($params['ini_file'])) ? $params['ini_file'] : NULL;
 
-			$params['ini_file'] = (isset($params['ini_file'])) ? $params['ini_file'] : NULL;
-			$serv = New Server($params);
-			$this->conn = $serv->connect();
+			$params['ini_file'] = $this->ini_file;
+			$serv = New Server();
+			$this->conn = $serv->connect($params);
 		}
 		catch(PDOException $e){
 			$response['response'] = array(
@@ -41,10 +47,6 @@ class DataModel extends Server {
 				);
 			return $response;
 		}
-	}
-	function __destruct() {
-		$this->conn = NULL;
-		unset($this->conn);
 	}
 	public function pdoFetch($args = NULL) {
 		if(!array_keys($this->allowedOperations, $args['operationType'])){
@@ -163,6 +165,11 @@ class DataModel extends Server {
 	}
 	function pdoExecute($sql, $binding, $operationType, $pkID = NULL){
 		// echo("/*" . $sql . "*/");
+		if(!$this->conn){
+		 	$return['status'] = -111;
+		 	$return['errorMessage'] = 'No connection.';
+		 	return $return;
+		}
 		try{
 			$stmt = $this->conn->prepare($sql);
 			if(!$stmt){

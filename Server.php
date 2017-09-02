@@ -8,7 +8,7 @@ class Server {
 	private $username = '';
 	private $password = '';
 	private $dbname = '';
-	function __construct($params = NULL) {
+	public function connect($params = NULL) {
 		if(isset($params['ini_file'])){
 			if(file_exists($params['ini_file'])){
 				$ini_array = parse_ini_file($params['ini_file'], true);
@@ -21,15 +21,11 @@ class Server {
 		$this->username = $ini_array['database']['username'];
 		$this->password = $ini_array['database']['password'];
 		$this->dbname = $ini_array['database']['dbname'];
-		$this->connect();
-	}
-	public function connect() {
  		try{
 			$opt = [
 				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-				PDO::ATTR_EMULATE_PREPARES   => false,
-				PDO::ATTR_ERRMODE			 => PDO::ERRMODE_EXCEPTION
+				PDO::ATTR_EMULATE_PREPARES   => false
 			];
 			$this->conn = new PDO("mysql:host={$this->hostname};dbname={$this->dbname}", $this->username, $this->password, $opt);
  		}
