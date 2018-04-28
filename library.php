@@ -14,9 +14,9 @@ function parseArray($inArr) {
 			$tempStr = parseArray($element);
 		}
 		if(!is_array($element)){
-			$tempStr = $key . ' | ' . $element . "<br />";
+			$tempStr = $key . ": " . $element;
 		}
-		$outStr .= $tempStr;
+		$outStr .= "<br/>" . $tempStr;
 	}
 	return $outStr;
 }
